@@ -268,7 +268,7 @@ def reconstruct():
     
     proj2D = np.sum( proj[ ..., :num_angles, : ], axis = 0 )
     
-    if dejustSet:
+    if dejustSet.get():
         
         uOffset = float( dejust.get() )
     
