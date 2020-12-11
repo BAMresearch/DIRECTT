@@ -16,7 +16,7 @@ root.title( 'DIRECTT - ' + root.filename )
 
 print( 'Loading', root.filename, '...' )
 
-proj = imageio.volread( root.filename ).transpose( 1, 0, 2 )
+proj = - np.log( imageio.volread( root.filename ).transpose( 1, 0, 2 ) )
 
 detRows, num_angles, detCols = proj.shape
 
@@ -77,13 +77,16 @@ def parameters():
     global endSkip
     global top
     global bottom
-    global manualSet
-    global autoCheck
+    global dejustSet
+    global dejustCheck
+    global dejust
+    global iterationSet
+    global iterationsCheck
     global num_iterations
     
     parameters = tkinter.Toplevel()
     parameters.title( 'DIRECTT - Reconstruction parameters' )
-    parameters.geometry( '409x189' )
+    parameters.geometry( '410x190' )
     
     tkinter.Label(
             parameters, text = 'Angular range: ', font = ( 'Verdana', 11 )
@@ -131,21 +134,32 @@ def parameters():
     bottom.insert( 0, detRows )
     bottom.grid( row = 3, column = 3 )
     
-    manualSet = tkinter.IntVar()
+    dejustSet = tkinter.IntVar()
     
-    autoCheck = tkinter.Checkbutton(
+    iterationsCheck = tkinter.Checkbutton(
+            parameters, text = 'Set rotation-axis shift manually:', variable =
+            dejustSet, font = ( 'Verdana', 11 ), command = autoDejust )
+    iterationsCheck.grid( row = 4, columnspan = 4, sticky = tkinter.W )
+    
+    dejust = tkinter.Entry( parameters, width = 4, font = ( 'Verdana', 11 ),
+                           state = tkinter.DISABLED )
+    dejust.grid( row = 4, column = 4 )
+    
+    iterationSet = tkinter.IntVar()
+    
+    iterationsCheck = tkinter.Checkbutton(
             parameters, text = 'Set number of iterations manually:', variable =
-            manualSet, font = ( 'Verdana', 11 ), command = autoIterations )
-    autoCheck.grid( row = 4, columnspan = 4, sticky = tkinter.W )
+            iterationSet, font = ( 'Verdana', 11 ), command = autoIterations )
+    iterationsCheck.grid( row = 5, columnspan = 4, sticky = tkinter.W )
     
     num_iterations = tkinter.Entry(
             parameters, width = 4, font = ( 'Verdana', 11 ), state =
             tkinter.DISABLED )
-    num_iterations.grid( row = 4, column = 4 )
+    num_iterations.grid( row = 5, column = 4 )
     
     tkinter.Button( parameters, text = 'Reconstruct', font = ( 'Verdana', 11 ),
                                   command = reconstruct
-                   ).grid( row = 5, columnspan = 5 )
+                   ).grid( row = 6, columnspan = 5 )
 
 def allProjections():
     
@@ -190,22 +204,39 @@ def allProjections():
         endSkip.insert( 0, 1 )
         endSkip.grid( row = 2, column = 6 )
 
-def autoIterations():
+def autoDejust():
     
-    global num_iterations
+    global dejust
     
-    if manualSet.get():
+    if dejustSet.get():
         
-        num_iterations = tkinter.Entry( parameters, width = 4, font = (
-                'Verdana', 11 ) )
-        num_iterations.insert( 0, 70 )
-        num_iterations.grid( row = 4, column = 4 )
+        dejust = tkinter.Entry(
+                parameters, width = 4, font = ( 'Verdana', 11 ) )
+        dejust.insert( 0, 0 )
+        dejust.grid( row = 4, column = 4 )
     
     else:
         
         num_iterations = tkinter.Entry( parameters, width = 4, font = (
                 'Verdana', 11 ), state = tkinter.DISABLED )
         num_iterations.grid( row = 4, column = 4 )
+
+def autoIterations():
+    
+    global num_iterations
+    
+    if iterationSet.get():
+        
+        num_iterations = tkinter.Entry( parameters, width = 4, font = (
+                'Verdana', 11 ) )
+        num_iterations.insert( 0, 70 )
+        num_iterations.grid( row = 5, column = 4 )
+    
+    else:
+        
+        num_iterations = tkinter.Entry( parameters, width = 4, font = (
+                'Verdana', 11 ), state = tkinter.DISABLED )
+        num_iterations.grid( row = 5, column = 4 )
 
 def reconstruct():
     
@@ -237,14 +268,21 @@ def reconstruct():
     
     proj2D = np.sum( proj[ ..., :num_angles, : ], axis = 0 )
     
-    centreOfMass = np.zeros( num_angles )
-    
-    for i in range( num_angles ):
+    if dejustSet:
         
-        centreOfMass[ i ] = scipy.ndimage.center_of_mass( proj2D[ i, : ] )[ 0 ]
+        uOffset = float( dejust.get() )
     
-    uOffset = ( detCols - 1 ) / 2 - scipy.optimize.curve_fit( curveFit, theta, 
-          centreOfMass )[ 0 ][ 2 ]
+    else:
+        
+        centreOfMass = np.zeros( num_angles )
+        
+        for i in range( num_angles ):
+            
+            centreOfMass[ i ] = scipy.ndimage.center_of_mass( proj2D[ i, : ] )[
+                    0 ]
+            
+        uOffset = ( detCols - 1 ) / 2 - scipy.optimize.curve_fit( curveFit,
+                      theta, centreOfMass )[ 0 ][ 2 ]
     
     vectors = np.zeros( [ num_angles, 12 ] )
     vectors[ :, 0 ] = np.sin( theta )
@@ -255,7 +293,7 @@ def reconstruct():
     vectors[ :, 7 ] = np.sin( theta )
     vectors[ :, 11 ] = 1
     
-    if manualSet.get():
+    if iterationSet.get():
         
         rec = manual( vectors )
     
