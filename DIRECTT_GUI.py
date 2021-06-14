@@ -7,6 +7,7 @@ import scipy.ndimage
 import scipy.signal
 import imageio
 import PIL.Image
+import PIL.ImageEnhance
 import PIL.ImageTk
 import astra
 import astra.utils
@@ -250,9 +251,10 @@ def rSlider( var ):
     
     volume.grid_forget()
     
-    rec_img = PIL.ImageTk.PhotoImage( image = PIL.Image.fromarray( np.uint8( (
-        rec[ int( var ) - 1 ] - np.amin( rec ) ) / ( np.amax(
-        rec ) - np.amin( rec ) ) * 255 ) ).resize( ( recWidth, recHeight ) ) )
+    rec_img = PIL.ImageTk.PhotoImage( image = PIL.ImageEnhance.Contrast(
+        PIL.Image.fromarray( np.uint8( ( rec[ int( var ) ] - np.amin(
+        rec ) ) / ( np.amax( rec ) - np.amin(
+        rec ) ) * 255 ) ) ).enhance( 2 ).resize( ( recWidth, recHeight ) ) )
         
     volume = tkinter.Label( volSlices, image = rec_img )
     volume.grid( row = 0 )
@@ -457,10 +459,11 @@ def reconstruct():
             recWidth = np.ceil(
                 610 * int( sizeX.get() ) / int( sizeY.get() ) ).astype( int )
         
-        rec_img = PIL.ImageTk.PhotoImage( image = PIL.Image.fromarray(
-            np.uint8( ( rec[ int( sizeZ.get() ) // 2 ] - np.amin( rec ) ) / (
-            np.amax( rec ) - np.amin(
-            rec ) ) * 255 ) ).resize( ( recWidth, recHeight ) ) )
+        rec_img = PIL.ImageTk.PhotoImage( image = PIL.ImageEnhance.Contrast(
+            PIL.Image.fromarray( np.uint8( ( rec[ int(
+            sizeZ.get() ) // 2 ] - np.amin( rec ) ) / ( np.amax(
+            rec ) - np.amin( rec ) ) * 255 ) ) ).enhance(
+            2 ).resize( ( recWidth, recHeight ) ) )
         
         volume = tkinter.Label( volSlices, image = rec_img )
         volume.grid( row = 0 )
