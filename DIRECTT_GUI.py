@@ -275,13 +275,15 @@ def reconstruct():
         vectors[ :, 0 ] = np.sin( theta ) * float( SOD.get() )
         vectors[ :, 1 ] = - np.cos( theta ) * float( SOD.get() )
         vectors[ :, 3 ] = - np.sin( theta ) * ( float( SDD.get() ) - float(
-            SOD.get() ) ) + np.cos( theta ) * ( float( offsetU.get() ) - (
-            NumChannelsPerRow / 2 - .5 ) ) * float( PixelSizeU.get() )
+            SOD.get() ) ) + np.cos( theta ) * ( (
+            NumChannelsPerRow / 2 - .5 ) - float(
+            offsetU.get() ) ) * float( PixelSizeU.get() )
         vectors[ :, 4 ] = np.cos( theta ) * ( float( SDD.get() ) - float(
-            SOD.get() ) ) + np.sin( theta ) * ( float( offsetU.get() ) - (
-            NumChannelsPerRow / 2 - .5 ) ) * float( PixelSizeU.get() )
-        vectors[ :, 5 ] = ( float( offsetV.get() ) - (
-            NumRows / 2 - .5 ) ) * float( PixelSizeV.get() )
+            SOD.get() ) ) + np.sin( theta ) * ( (
+            NumChannelsPerRow / 2 - .5 ) - float(
+            offsetU.get() ) ) * float( PixelSizeU.get() )
+        vectors[ :, 5 ] = ( ( NumRows / 2 - .5 ) - float(
+            offsetV.get() )  ) * float( PixelSizeV.get() )
         vectors[ :, 6 ] = np.cos( theta ) * np.cos( np.radians( float(
             b.get() ) ) ) * np.cos(
             np.radians( float( c.get() ) ) ) * float( PixelSizeU.get() )
