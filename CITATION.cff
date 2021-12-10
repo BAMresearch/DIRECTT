@@ -1,0 +1,17 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Graphic User Interface for reconstruction from
+  Computed Tomography data
+message: Please cite this software using these metadata.
+type: software
+authors:
+  - given-names: Sotirios
+    family-names: Magkos
+    email: sotirios.magkos@bam.de
+    affiliation: >-
+      Bündesanstalt für Materialforschung und
+      -prüfung
+    orcid: 'https://orcid.org/0000-0001-5785-4080'
