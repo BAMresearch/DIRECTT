@@ -7,6 +7,5 @@ GNU General Public License version 2.0 (GPLv2)
 
 ## Selected references:
 
-https://doi.org/10.3139/120.100885
-
-https://doi.org/10.1063/5.0013111
+[1] https://doi.org/10.3139/120.100885
+[2] https://doi.org/10.1063/5.0013111
