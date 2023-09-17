@@ -10,7 +10,7 @@ from numpy.linalg import norm
 
 from Tabs import Tabs
 
-from imageio import volread, volwrite
+from imageio import volread
 
 from scipy.signal import convolve
 
