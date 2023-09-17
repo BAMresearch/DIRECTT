@@ -1,6 +1,10 @@
 ## Reconstruction GUI
 A graphical user interface, based on the ASTRA toolbox [1], for the reconstruction from X-ray Computed Tomography data. It includes the option of the DIRECTT algorithm [2,3].
 
+Run the file Main.py to start the GUI.
+
+* More thorough documentation will be added soon.
+
 ## License
 
 GNU General Public License version 2.0 (GPLv2)
