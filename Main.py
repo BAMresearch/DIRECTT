@@ -306,27 +306,33 @@ class Main(tkinter.Tk):
 
         res = np.copy(self.proj_data)
 
+        norm_proj = norm(res)
+
         res_id = astra.data3d.create('-sino', self.proj_geom, res)
 
-        matrix_of_ones = np.ones([self.data_shape[1], self.data_shape[0],
-                                  self.data_shape[2]], dtype=np.float32)
+        uniform = np.ones([self.data_shape[1], self.data_shape[0],
+                           self.data_shape[2]], dtype=np.float32)
+        uniform *= norm_proj / norm(uniform)
 
-        moo_id = astra.data3d.create('-sino', self.proj_geom, matrix_of_ones)
+        uni_id = astra.data3d.create('-sino', self.proj_geom, uniform)
 
-        self.config['ProjectionDataId'] = moo_id
+        self.config['ProjectionDataId'] = uni_id
 
         algo_id = astra.algorithm.create(self.config)
 
         astra.algorithm.run(algo_id)
 
-        backproj_moo = astra.data3d.get(self.vol_id)
+        backproj_uni = astra.data3d.get(self.vol_id)
 
-        astra.data3d.delete(moo_id)
+        astra.data3d.delete(uni_id)
         astra.algorithm.delete(algo_id)
 
-        norm_moo = norm(matrix_of_ones)
+        uni_id, uniform = astra.create_sino3d_gpu(backproj_uni, self.proj_geom,
+                                                  self.vol_geom)
 
-        norm_ratio = norm(self.proj_data) / norm_moo
+        norm_uni = norm(uniform)
+
+        del uniform
 
         vol_data = np.zeros([int(vol.grid_slice_count.get()), int(
                 vol.grid_row_count.get()), int(vol.grid_col_count.get())],
@@ -339,14 +345,15 @@ class Main(tkinter.Tk):
 
             astra.algorithm.run(algo_id)
 
-            g_k = astra.data3d.get(self.vol_id) - norm(
-                    res) / norm_moo * backproj_moo
+            norm_res = norm(res)
+
+            g_k = astra.data3d.get(
+                    self.vol_id) - norm_res / norm_proj * backproj_uni
+            g_k *= norm_res / norm_uni * backproj_uni / g_k.max()
+            g_k[(g_k < 0) * (-g_k > vol_data)] = 0
 
             astra.data3d.delete(res_id)
             astra.algorithm.delete(algo_id)
-
-            g_k *= norm_ratio * backproj_moo / g_k.max()
-            g_k[(g_k < 0) * (-g_k > vol_data)] = 0
 
             vol_data += g_k
 
