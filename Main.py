@@ -14,15 +14,15 @@ from imageio import volread
 
 from scipy.signal import convolve
 
-FONT = {'10': ('Segoe UI', 10), '11': ('Segoe UI', 11)}
+FONT = {"10": ("Segoe UI", 10), "11": ("Segoe UI", 11)}
 
-KW_ENTRIES = [{'font': FONT['10'], 'state': 'disabled'},
-              {'column': 1, 'sticky': tkinter.SW, 'padx': (5, 10)}]
+KW_ENTRIES = [{"font": FONT["10"], "state": "disabled"},
+              {"column": 1, "sticky": tkinter.SW, "padx": (5, 10)}]
 
-BEAM = {'Parallel': 'parallel3d_vec', 'Cone': 'cone_vec'}
+BEAM = {"Parallel": "parallel3d_vec", "Cone": "cone_vec"}
 
-ALGO = {'FBP': 'BP3D_CUDA', 'SIRT': 'SIRT3D_CUDA', 'CGLS': 'CGLS3D_CUDA',
-        'DIRECTT': 'BP3D_CUDA'}
+ALGO = {"FBP": "BP3D_CUDA", "SIRT": "SIRT3D_CUDA", "CGLS": "CGLS3D_CUDA",
+        "DIRECTT": "BP3D_CUDA"}
 
 
 class Main(tkinter.Tk):
@@ -31,25 +31,25 @@ class Main(tkinter.Tk):
 
         self.tabs = Tabs(self)
 
-        tkinter.Button(self, width=12, text='Load data', font=FONT['11'],
+        tkinter.Button(self, width=12, text="Load data", font=FONT["11"],
                        command=self.load).grid(row=1, column=0, pady=5)
 
         self.reconstruct_button = tkinter.Button(self, width=12,
-                                                 text='Reconstruct',
-                                                 font=FONT['11'],
+                                                 text="Reconstruct",
+                                                 font=FONT["11"],
                                                  command=self.reconstruct)
-        self.reconstruct_button.config(state='disabled')
+        self.reconstruct_button.config(state="disabled")
         self.reconstruct_button.grid(row=1, column=1)
-        self.save_button = tkinter.Button(self, width=12, text='Save volume',
-                                          font=FONT['11'], command=self.save)
-        self.save_button.config(state='disabled')
+        self.save_button = tkinter.Button(self, width=12, text="Save volume",
+                                          font=FONT["11"], command=self.save)
+        self.save_button.config(state="disabled")
         self.save_button.grid(row=1, column=2)
 
     def load(self):
-        filename = filedialog.askopenfilename(initialdir='C:/',
-                                              title='Select file')
+        filename = filedialog.askopenfilename(initialdir="C:/",
+                                              title="Select file")
 
-        self.title(filename.split('/')[-1])
+        self.title(filename.split("/")[-1])
         self.proj_data = volread(filename)
         self.proj_data[self.proj_data <= 0] = self.proj_data[
                 self.proj_data > 0].min()
@@ -60,7 +60,7 @@ class Main(tkinter.Tk):
                                                     self.data_shape[1])
             self.data_shape = self.proj_data.shape
 
-        self.proj_data = - np.log(self.proj_data).astype(np.float32).reshape(
+        self.proj_data = -np.log(self.proj_data).astype(np.float32).reshape(
                 self.data_shape[0], self.data_shape[1] * self.data_shape[2])
         self.proj_range = np.append(np.amin(self.proj_data, axis=1).reshape(
                 1, -1), np.amax(self.proj_data, axis=1).reshape(1, -1), axis=0)
@@ -69,66 +69,66 @@ class Main(tkinter.Tk):
 
         proj = self.tabs.proj
         proj.proj_count.grid_forget()
-        proj.proj_count = tkinter.Entry(proj, font=FONT['10'])
+        proj.proj_count = tkinter.Entry(proj, font=FONT["10"])
         proj.proj_count.insert(tkinter.END, str(self.data_shape[0]))
-        proj.proj_count.config(state='readonly')
+        proj.proj_count.config(state="readonly")
         proj.proj_count.grid(row=0, **KW_ENTRIES[1])
         proj.detector_row_count.grid_forget()
-        proj.detector_row_count = tkinter.Entry(proj, font=FONT['10'])
+        proj.detector_row_count = tkinter.Entry(proj, font=FONT["10"])
         proj.detector_row_count.insert(tkinter.END, str(self.data_shape[2]))
-        proj.detector_row_count.config(state='readonly')
+        proj.detector_row_count.config(state="readonly")
         proj.detector_row_count.grid(row=1, **KW_ENTRIES[1])
         proj.detector_col_count.grid_forget()
-        proj.detector_col_count = tkinter.Entry(proj, font=FONT['10'])
+        proj.detector_col_count = tkinter.Entry(proj, font=FONT["10"])
         proj.detector_col_count.insert(tkinter.END, str(self.data_shape[1]))
-        proj.detector_col_count.config(state='readonly')
+        proj.detector_col_count.config(state="readonly")
         proj.detector_col_count.grid(row=2, **KW_ENTRIES[1])
-        proj.spacing_x.config(state='normal')
-        proj.spacing_y.config(state='normal')
+        proj.spacing_x.config(state="normal")
+        proj.spacing_y.config(state="normal")
 
         geo = self.tabs.geo
-        geo.start_angle.config(state='normal')
-        geo.beam.config(state='normal')
+        geo.start_angle.config(state="normal")
+        geo.beam.config(state="normal")
         geo.offset_u.grid_forget()
-        geo.offset_u = tkinter.Entry(geo, font=FONT['10'])
+        geo.offset_u = tkinter.Entry(geo, font=FONT["10"])
         geo.offset_u.insert(tkinter.END, str(self.data_shape[1]/2-.5))
         geo.offset_u.grid(row=4, **KW_ENTRIES[1])
         geo.offset_v.grid_forget()
-        geo.offset_v = tkinter.Entry(geo, font=FONT['10'])
+        geo.offset_v = tkinter.Entry(geo, font=FONT["10"])
         geo.offset_v.insert(tkinter.END, str(self.data_shape[2]/2-.5))
         geo.offset_v.grid(row=5, **KW_ENTRIES[1])
-        geo.scan_angle.config(state='normal')
-        geo.direction.config(state='normal')
-        geo.a.config(state='normal')
-        geo.b.config(state='normal')
-        geo.c.config(state='normal')
+        geo.scan_angle.config(state="normal")
+        geo.direction.config(state="normal")
+        geo.a.config(state="normal")
+        geo.b.config(state="normal")
+        geo.c.config(state="normal")
 
         vol = self.tabs.vol
         vol.grid_col_count.grid_forget()
-        vol.grid_col_count = tkinter.Entry(vol, font=FONT['10'])
+        vol.grid_col_count = tkinter.Entry(vol, font=FONT["10"])
         vol.grid_col_count.insert(tkinter.END, str(self.data_shape[2]))
         vol.grid_col_count.grid(row=0, **KW_ENTRIES[1])
         vol.grid_row_count.grid_forget()
-        vol.grid_row_count = tkinter.Entry(vol, font=FONT['10'])
+        vol.grid_row_count = tkinter.Entry(vol, font=FONT["10"])
         vol.grid_row_count.insert(tkinter.END, str(self.data_shape[2]))
         vol.grid_row_count.grid(row=1, **KW_ENTRIES[1])
         vol.grid_slice_count.grid_forget()
-        vol.grid_slice_count = tkinter.Entry(vol, font=FONT['10'])
+        vol.grid_slice_count = tkinter.Entry(vol, font=FONT["10"])
         vol.grid_slice_count.insert(tkinter.END, str(self.data_shape[1]))
         vol.grid_slice_count.grid(row=2, **KW_ENTRIES[1])
-        vol.midpoint_x.config(state='normal')
-        vol.midpoint_y.config(state='normal')
-        vol.midpoint_z.config(state='normal')
-        vol.voxel_x.config(state='normal')
-        vol.voxel_y.config(state='normal')
-        vol.voxel_z.config(state='normal')
-        vol.output.config(state='normal')
+        vol.midpoint_x.config(state="normal")
+        vol.midpoint_y.config(state="normal")
+        vol.midpoint_z.config(state="normal")
+        vol.voxel_x.config(state="normal")
+        vol.voxel_y.config(state="normal")
+        vol.voxel_z.config(state="normal")
+        vol.output.config(state="normal")
 
         algo = self.tabs.algo
-        algo.algo_menu.config(state='normal')
-        algo.filters_menu.config(state='normal')
+        algo.algo_menu.config(state="normal")
+        algo.filters_menu.config(state="normal")
 
-        self.reconstruct_button.config(state='normal')
+        self.reconstruct_button.config(state="normal")
 
         Toplevels.ProjImage(self)
 
@@ -148,11 +148,8 @@ class Main(tkinter.Tk):
                                  np.radians(float(geo.start_angle.get())
                                  + float(geo.scan_angle.get())) * (1-2*(
                                          geo.direction_option.get(
-                                                 ) == 'Clockwise')),
+                                                 ) == "Clockwise")),
                                  self.data_shape[0], False)
-
-            object_image_distance = float(geo.source_image_distance.get(
-                    )) - float(geo.source_object_distance.get())
 
             vectors = np.zeros([self.data_shape[0], 12])
             vectors[:, 0] = np.sin(angles)
@@ -176,7 +173,10 @@ class Main(tkinter.Tk):
                     float(geo.a.get()))) * np.cos(np.radians(float(geo.b.get(
                             ))))
 
-            if geo.beam_option.get() == 'Cone':
+            if geo.beam_option.get() == "Cone":
+                object_image_distance = float(geo.source_image_distance.get(
+                    )) - float(geo.source_object_distance.get())
+
                 vectors[:, :2] *= float(geo.source_object_distance.get())
                 vectors[:, 3] = - np.sin(
                         angles) * object_image_distance + np.cos(
@@ -191,7 +191,7 @@ class Main(tkinter.Tk):
                                                 ))/2-.5-float(geo.offset_u.get(
                                                         )))
 
-                if algo.algo_option.get() != 'FBP':
+                if algo.algo_option.get() != "FBP":
                     pad_z = int(vol.grid_slice_count.get()) * np.amax([
                             int(vol.grid_col_count.get()) * float(
                                     vol.voxel_x.get()), int(
@@ -200,9 +200,10 @@ class Main(tkinter.Tk):
                     pad_z /= 2*float(geo.source_object_distance.get())
                     pad_z = int(pad_z - pad_z % 2)
 
-                    k = int(algo.iterations.get())
-                else:
-                    k = 1
+            if algo.algo_option.get() == "FBP":
+                k = 1
+            else:
+                k = int(algo.iterations.get())
 
             self.vol_geom = astra.create_vol_geom(
                     int(vol.grid_row_count.get()),
@@ -223,9 +224,9 @@ class Main(tkinter.Tk):
                             vol.grid_slice_count.get()) + pad_z)/2 * float(
                             vol.voxel_z.get()))
         except ValueError:
-            showerror('Error', 'Invalid entry!')
+            showerror("Error", "Invalid entry!")
 
-        if algo.filter_option.get() == 'Ram-Lak':
+        if algo.filter_option.get() == "Ram-Lak":
             rampbl = np.zeros(self.data_shape[2]*2-self.data_shape[2] % 2)
             rampbl[self.data_shape[2]-1] = .25
 
@@ -236,31 +237,31 @@ class Main(tkinter.Tk):
             rampbl[(self.data_shape[2] % 2)::2] = -1/(idxodd * np.pi)**2
 
             self.proj_data = convolve(self.proj_data, rampbl.reshape(1, 1, -1),
-                                      mode='same')
-        elif algo.filter_option.get() == 'Shepp-Logan':
+                                      mode="same")
+        elif algo.filter_option.get() == "Shepp-Logan":
             rampbl = -2/np.pi**2 / (4*np.arange(-self.data_shape[2]+1,
                                                 self.data_shape[2] + (
                                                         self.data_shape[2]+1
                                                                 ) % 2)**2-1)
 
             self.proj_data = convolve(self.proj_data, rampbl.reshape(1, 1, -1),
-                                      mode='same')
+                                      mode="same")
 
         self.proj_geom = astra.create_proj_geom(BEAM[geo.beam_option.get(
                 )], int(proj.detector_col_count.get()),
             int(proj.detector_row_count.get()), vectors)
-        self.vol_id = astra.data3d.create('-vol', self.vol_geom)
+        self.vol_id = astra.data3d.create("-vol", self.vol_geom)
         self.config = astra.astra_dict(ALGO[algo.algo_option.get()])
-        self.config['ReconstructionDataId'] = self.vol_id
+        self.config["ReconstructionDataId"] = self.vol_id
 
-        if algo.algo_option.get() == 'DIRECTT':
+        if algo.algo_option.get() == "DIRECTT":
             self.vol_data = self.directt(k)[pad_z//2:int(
                     vol.grid_slice_count.get())+pad_z//2]
         else:
-            sino_id = astra.data3d.create('-sino', self.proj_geom,
+            sino_id = astra.data3d.create("-sino", self.proj_geom,
                                           self.proj_data)
 
-            self.config['ProjectionDataId'] = sino_id
+            self.config["ProjectionDataId"] = sino_id
 
             algo_id = astra.algorithm.create(self.config)
 
@@ -279,24 +280,26 @@ class Main(tkinter.Tk):
                                               int(vol.grid_row_count.get()),
                                               int(vol.grid_col_count.get()))
 
-        if algo.algo_option.get() != 'FBP':
-            print(algo.algo_option.get(), 'was terminated after', k,
-                  'iterations')
+        if algo.algo_option.get() != "FBP":
+            print(algo.algo_option.get(), "was terminated after", k,
+                  "iterations")
 
-        self.save_button.config(state='normal')
+        self.save_button.config(state="normal")
 
         Toplevels.VolImage(self)
 
     def save(self):
         filename = self.tabs.vol.output.get()
-        if filename == '':
-            showerror('Error', 'No name was provided for the output file!')
+        if filename == "":
+            showerror("Error", "No name was provided for the output file!")
         else:
-            filename = filedialog.askdirectory(initialdir='C:/',
-                                               title='Select directory'
-                                               ) + '/' + filename
-            if not filename.endswith('.raw'):
-                filename += '.raw'
+            filename = filedialog.askdirectory(initialdir="C:/",
+                                               title="Select directory"
+                                               ) + "/" + filename
+
+            if not filename.endswith(".raw"):
+                filename += ".raw"
+
             np.uint8(255*(self.vol_data - self.vol_range[0].min())/(
                     self.vol_range[1].max() - self.vol_range[0].min())).tofile(
                 filename)
@@ -308,15 +311,15 @@ class Main(tkinter.Tk):
 
         norm_proj = norm(res)
 
-        res_id = astra.data3d.create('-sino', self.proj_geom, res)
+        res_id = astra.data3d.create("-sino", self.proj_geom, res)
 
         uniform = np.ones([self.data_shape[1], self.data_shape[0],
                            self.data_shape[2]], dtype=np.float32)
         uniform *= norm_proj / norm(uniform)
 
-        uni_id = astra.data3d.create('-sino', self.proj_geom, uniform)
+        uni_id = astra.data3d.create("-sino", self.proj_geom, uniform)
 
-        self.config['ProjectionDataId'] = uni_id
+        self.config["ProjectionDataId"] = uni_id
 
         algo_id = astra.algorithm.create(self.config)
 
@@ -339,7 +342,7 @@ class Main(tkinter.Tk):
             dtype=np.float32)
 
         for i in range(k):
-            self.config['ProjectionDataId'] = res_id
+            self.config["ProjectionDataId"] = res_id
 
             algo_id = astra.algorithm.create(self.config)
 
@@ -365,7 +368,7 @@ class Main(tkinter.Tk):
 
             res = self.proj_data - x_transform
 
-            res_id = astra.data3d.create('-sino', self.proj_geom, res)
+            res_id = astra.data3d.create("-sino", self.proj_geom, res)
 
         return(vol_data)
 
