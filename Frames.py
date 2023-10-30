@@ -98,7 +98,8 @@ class Geo(tkinter.Frame):
         self.direction_option = tkinter.StringVar()
         self.direction_option.set("Counter-clockwise")
         self.direction = tkinter.OptionMenu(self, self.direction_option,
-                                            ["Clockwise", "Counter-clockwise"])
+                                            *["Clockwise",
+                                              "Counter-clockwise"])
         self.direction.config(**KW_ENTRIES[0])
         self.direction.grid(row=7, **KW_ENTRIES[1])
         self.a = tkinter.Entry(self)
